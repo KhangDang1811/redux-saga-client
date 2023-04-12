@@ -1,26 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+// import { createProduct } from './actions';
+import { FetchProduct, createProductRequest } from './store/todo/action';
+import { useSelector } from 'react-redux';
+import { getProductState } from './store/todo/selector';
 
-function App() {
+const CreateProductForm = () => {
+  const dispatch = useDispatch();
+  const [title, setTitle] = useState('');
+  const [price, setPrice] = useState('');
+
+  const product = useSelector(getProductState)
+  //  console.log("bb",product);
+  
+  React.useEffect(() => {
+    dispatch(FetchProduct());
+  }, [dispatch,product]);
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(createProductRequest({title}));
+
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+    <form onSubmit={handleSubmit}>
+      <label>
+        Title:
+        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+      </label>
+      
+      <button type="submit">Create Product</button>
+    </form>
+    <h2> List</h2>
+    {
+      product?.map((x:any) =>(
+        <ul>
+          <li>{x.title}</li>
+        </ul>
+      ))
+    }
+     
     </div>
   );
-}
+};
 
-export default App;
+export default CreateProductForm;
